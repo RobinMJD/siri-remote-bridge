@@ -70,6 +70,17 @@ Never recover by weakening HA authentication or reusing a secret from a log.
 
 ## Upgrade / rollback
 
+TV/Home holds emit the compatible `control_center` event, but the HA example
+maps it to `remote.send_command` with `command: home` and `hold_secs: 1`.
+That preserves native button semantics rather than invoking Companion's
+dedicated control-center shortcut (which can focus the power panel). If an
+older installation shows the wrong panel, back up its automation, add this
+branch from the example, run HA's configuration check and reload Automations.
+Do not change Bluetooth pairing, Power handling, or decoder thresholds. Verify
+short tap and hold against the original remote on the same tvOS screen;
+different Apple TV versions can present different panels. Roll back just the
+automation preimage if needed. An HTTP success alone is not physical acceptance.
+
 Keep a working source tag, both image IDs and a **cold private-state backup**.
 Review the diff, run CI/static checks and build the candidate images before
 stopping the old stack. Tag working images locally for rollback; do not prune

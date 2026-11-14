@@ -11,6 +11,14 @@ import configure
 
 
 class ToolsTests(unittest.TestCase):
+    def test_home_hold_example_uses_native_hold_not_control_center_shortcut(self):
+        example = (Path(__file__).resolve().parents[1] / "examples/home-assistant.yaml").read_text()
+        branch = example.split("trigger.json.button == 'control_center'", 1)[1]
+        branch = branch.split("- conditions:", 1)[0]
+        self.assertIn("command: home, hold_secs: 1", branch)
+        self.assertIn("num_repeats: 1", branch)
+        self.assertNotIn("command: control_center", branch)
+
     @patch("collect_metrics.command")
     def test_metrics_are_liveness_not_idle_activity(self, command):
         command.side_effect = ['{"Running":true,"Health":{"Status":"healthy"}}'] * 2 + [
