@@ -360,6 +360,11 @@ def main():
                 for key, _ in selector.select(timeout=0.03):
                     chunk = os.read(key.fileobj.fileno(), 65536)
                     if not chunk:
+                        # EOF is a disconnect too: do not let a deferred hold
+                        # fire during the next backend poll interval.
+                        stop_child()
+                        probe_at = 0
+                        next_start = time.monotonic() + 2
                         break
                     buffer += chunk
                     lines = buffer.split(b"\n")

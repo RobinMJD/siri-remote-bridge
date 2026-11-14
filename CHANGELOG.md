@@ -8,3 +8,5 @@
 - Persistent bonding, manual pairing, Docker boot recovery and backend recovery.
 - Liveness status that does not treat an idle or sleeping remote as a fault.
 - Tests, pinned CI actions, deployment, security, recovery and hardware runbooks.
+- Clear deferred input immediately when decoder output closes, not on the next poll.
+- Verified controlled live crash/backend/power recovery without replacing the bond.
