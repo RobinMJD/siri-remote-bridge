@@ -27,7 +27,7 @@ jobs:
       - run: sh tests/smoke-container.sh
       - name: Test deployed Linux image without a radio
         run: >-
-          docker run --rm --network none --read-only --cap-drop ALL
+          docker run --rm --network none --read-only --cap-drop ALL --tmpfs /tmp:mode=1777
           --entrypoint python3 -e PYTHONPATH=/workspace -v "$PWD:/workspace:ro"
           -w /opt/siri-remote local/siri-remote-bridge-relay:0.1.0
           -B -m unittest discover -s /workspace/tests -v
