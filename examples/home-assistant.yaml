@@ -40,6 +40,12 @@
             - action: remote.send_command
               target: {entity_id: remote.apple_tv}
               data: {command: menu, hold_secs: 1, delay_secs: 0, num_repeats: 1}
+        - conditions: "{{ trigger.json.button == 'control_center' }}"
+          sequence:
+            # A native TV/Home hold differs from Companion's control_center shortcut.
+            - action: remote.send_command
+              target: {entity_id: remote.apple_tv}
+              data: {command: home, hold_secs: 1, delay_secs: 0, num_repeats: 1}
         - conditions: "{{ trigger.json.button == 'play_pause' }}"
           sequence:
             - action: media_player.media_play_pause

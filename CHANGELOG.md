@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Send a native held Home command for TV/Home holds in the HA example. The
+  Companion `control_center` shortcut can instead open the power-focused panel
+  on some tvOS versions. The wire event name stays compatible; decoder, images,
+  short taps, and Power handling are unchanged. Reload HA Automations after
+  updating the example; no receiver image rebuild is needed for this fix.
+
 ## 0.1.0 - 2026-11-14
 
 - Initial Linux/BlueZ container bridge using a pinned upstream HID decoder.
