@@ -15,7 +15,7 @@
            and trigger.json.get('button') in
              ['up','down','left','right','select','menu','menu_hold','home',
               'control_center','play_pause','volume_up','volume_down','mute','wakeup','suspend']
-           and 0 <= as_timestamp(now()) - (trigger.json.get('sent_at',0) | float(0)) < 1 }}
+           and -0.25 <= as_timestamp(now()) - (trigger.json.get('sent_at',0) | float(0)) < 1 }}
     - condition: template
       value_template: >-
         {{ trigger.json.button in ['mute','wakeup'] or is_state('remote.apple_tv','on') }}

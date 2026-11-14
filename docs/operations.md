@@ -22,6 +22,15 @@ textfile collector. Alert on stale heartbeat, stopped components, missing radio
 or bond for several minutes; **do not alert on an idle remote alone**. No
 public metrics listener or general Docker-socket exporter is needed.
 
+HTTP 200 does not prove HA accepted a command: an automation can silently fail
+its conditions. The example permits a sender timestamp up to 250 ms ahead of
+HA to tolerate small clock skew between synchronized Linux hosts/VMs, while
+still rejecting commands one second old or older. Keep both clocks synchronized;
+do not enlarge this margin to hide a broken clock. If buttons arrive but do
+nothing, inspect HA automation traces and compare the timestamp condition
+before re-pairing or resetting Bluetooth. A real 8 ms negative age reproduced
+this failure with the earlier zero-tolerance condition.
+
 ## Restart and maintenance
 
 ```sh

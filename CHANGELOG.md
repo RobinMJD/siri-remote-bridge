@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Permit bounded 250 ms cross-host clock skew in the HA freshness condition;
+  preserve the one-second expiry for old input. A synchronized VM only 8 ms
+  behind the sender otherwise silently dropped every button despite HTTP 200.
+
 - Send a native held Home command for TV/Home holds in the HA example. The
   Companion `control_center` shortcut can instead open the power-focused panel
   on some tvOS versions. The wire event name stays compatible; decoder, images,
