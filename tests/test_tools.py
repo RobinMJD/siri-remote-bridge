@@ -1,6 +1,7 @@
 import contextlib
 import io
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -11,6 +12,17 @@ import configure
 
 
 class ToolsTests(unittest.TestCase):
+    def test_example_freshness_allows_small_clock_skew_but_keeps_old_input_expiry(self):
+        source = (Path(__file__).resolve().parents[1] / "examples/home-assistant.yaml").read_text()
+        match = re.search(r"and (-?[\d.]+) <= as_timestamp\(now\(\)\).*? < ([\d.]+)", source)
+        self.assertIsNotNone(match)
+        lower, upper = map(float, match.groups())
+        self.assertEqual((lower, upper), (-0.25, 1.0))
+        for age in [-0.008, 0, 0.99]:
+            self.assertTrue(lower <= age < upper)
+        for age in [-0.251, -1, 1, 5, float("nan")]:
+            self.assertFalse(lower <= age < upper)
+
     def test_home_hold_example_uses_native_hold_not_control_center_shortcut(self):
         example = (Path(__file__).resolve().parents[1] / "examples/home-assistant.yaml").read_text()
         branch = example.split("trigger.json.button == 'control_center'", 1)[1]
