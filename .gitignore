@@ -1,0 +1,9 @@
+__pycache__/
+.ruff_cache/
+ha_webhook.json
+state/
+bus/
+secrets/
+private/
+.env
+*.tar*

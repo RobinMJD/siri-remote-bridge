@@ -1,0 +1,7 @@
+*
+!Dockerfile
+!relay.py
+!bluez_status.py
+!healthcheck.py
+!bluez-entrypoint.sh
+!dbus.conf

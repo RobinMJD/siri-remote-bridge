@@ -1,0 +1,68 @@
+# Include as: automation siri_remote_bridge: !include siri_remote_bridge.yaml
+# Change only fixed target entity IDs below. Match device_id to your JSON config.
+- id: siri_remote_bridge
+  alias: Siri Remote Bridge - Apple TV
+  triggers:
+    - trigger: webhook
+      webhook_id: !secret siri_remote_bridge_webhook
+      allowed_methods: [POST]
+      local_only: true
+  conditions:
+    - condition: template
+      value_template: >-
+        {{ trigger.json is mapping
+           and trigger.json.get('device') == 'siri_remote_bridge'
+           and trigger.json.get('button') in
+             ['up','down','left','right','select','menu','menu_hold','home',
+              'control_center','play_pause','volume_up','volume_down','mute','wakeup','suspend']
+           and 0 <= as_timestamp(now()) - (trigger.json.get('sent_at',0) | float(0)) < 1 }}
+    - condition: template
+      value_template: >-
+        {{ trigger.json.button in ['mute','wakeup'] or is_state('remote.apple_tv','on') }}
+  actions:
+    - choose:
+        - conditions: "{{ trigger.json.button == 'wakeup' }}"
+          sequence:
+            - condition: template
+              value_template: "{{ has_value('remote.apple_tv') }}"
+            - if: "{{ is_state('remote.apple_tv','off') }}"
+              then:
+                - action: remote.turn_on
+                  target: {entity_id: remote.apple_tv}
+                - wait_template: "{{ is_state('remote.apple_tv','on') }}"
+                  timeout: "00:00:05"
+                  continue_on_timeout: false
+            - action: remote.send_command
+              target: {entity_id: remote.apple_tv}
+              data: {command: wakeup, delay_secs: 0, num_repeats: 1}
+        - conditions: "{{ trigger.json.button == 'menu_hold' }}"
+          sequence:
+            - action: remote.send_command
+              target: {entity_id: remote.apple_tv}
+              data: {command: menu, hold_secs: 1, delay_secs: 0, num_repeats: 1}
+        - conditions: "{{ trigger.json.button == 'play_pause' }}"
+          sequence:
+            - action: media_player.media_play_pause
+              target: {entity_id: media_player.apple_tv}
+        - conditions: "{{ trigger.json.button == 'mute' }}"
+          sequence:
+            # Optional Sonos mapping; replace/remove this branch for other audio.
+            - condition: template
+              value_template: >-
+                {{ has_value('media_player.soundbar')
+                   and state_attr('media_player.soundbar','is_volume_muted') is boolean }}
+            - action: media_player.volume_mute
+              target: {entity_id: media_player.soundbar}
+              data:
+                is_volume_muted: "{{ not state_attr('media_player.soundbar','is_volume_muted') }}"
+      default:
+        - action: remote.send_command
+          target: {entity_id: remote.apple_tv}
+          data:
+            command: "{{ trigger.json.button }}"
+            delay_secs: 0
+            num_repeats: 1
+  mode: queued
+  max: 2
+  max_exceeded: silent
+  trace: {stored_traces: 10}

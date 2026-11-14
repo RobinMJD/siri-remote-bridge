@@ -1,0 +1,71 @@
+name: siri-remote-bridge
+services:
+  bluez:
+    build: {context: ., target: bluez}
+    image: local/siri-remote-bridge-bluez:0.1.0
+    init: true
+    network_mode: host
+    cap_drop: [ALL]
+    cap_add: [NET_ADMIN, NET_RAW, NET_BIND_SERVICE]
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    tmpfs: ["/tmp:size=8m,mode=1777"]
+    volumes:
+      - type: bind
+        source: ${STATE_DIRECTORY:-./private}/bus
+        target: /run/siri-test
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${STATE_DIRECTORY:-./private}/bluetooth
+        target: /var/lib/bluetooth
+        bind: {create_host_path: false}
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 48
+    restart: unless-stopped
+    stop_grace_period: 10s
+    healthcheck:
+      test: [CMD, python3, /opt/siri-remote/bluez_status.py, --health]
+      interval: 15s
+      timeout: 8s
+      retries: 5
+      start_period: 90s
+    logging:
+      options: {max-size: 5m, max-file: "2"}
+  relay:
+    build: {context: ., target: relay}
+    image: local/siri-remote-bridge-relay:0.1.0
+    init: true
+    user: "65532:65532"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+      - /run/siri-remote:size=1m,uid=65532,gid=65532,mode=0700
+    volumes:
+      - type: bind
+        source: ${STATE_DIRECTORY:-./private}/bus
+        target: /run/siri-test
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${STATE_DIRECTORY:-./private}/secrets
+        target: /run/secrets
+        read_only: true
+        bind: {create_host_path: false}
+    depends_on:
+      bluez: {condition: service_healthy}
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    restart: unless-stopped
+    stop_grace_period: 10s
+    healthcheck:
+      test: [CMD, python3, /opt/siri-remote/healthcheck.py]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    logging:
+      options: {max-size: 5m, max-file: "2"}

@@ -1,0 +1,37 @@
+groups:
+  - name: siri-remote-bridge
+    rules:
+      - alert: SiriRemoteBridgeUnavailable
+        expr: >-
+          (siri_remote_bridge_component_up == 0)
+          and on(instance) (siri_remote_bridge_maintenance == 0)
+        for: 5m
+        labels: {severity: warning, service: siri-remote-bridge}
+        annotations:
+          summary: Siri Remote bridge component unavailable
+          description: Check the dedicated stack health; do not reset Bluetooth bonds automatically.
+      - alert: SiriRemoteBridgeBackendUnavailable
+        expr: >-
+          (siri_remote_bridge_backend_ready == 0 or siri_remote_bridge_bond_present == 0)
+          and on(instance) (siri_remote_bridge_maintenance == 0)
+        for: 5m
+        labels: {severity: warning, service: siri-remote-bridge}
+        annotations:
+          summary: Siri Remote Bluetooth adapter or bond unavailable
+          description: Inspect passthrough/firmware and the stored bond. An idle remote alone is not a fault.
+      - alert: SiriRemoteBridgeMonitoringStale
+        expr: time() - siri_remote_bridge_collector_timestamp_seconds > 180
+        for: 5m
+        labels: {severity: warning, service: siri-remote-bridge}
+        annotations:
+          summary: Siri Remote bridge monitoring is stale
+          description: Check the textfile collector timer before assuming the bridge itself is down.
+      - alert: SiriRemoteBridgeDeliveryFailures
+        expr: >-
+          (increase(siri_remote_bridge_http_failures_total[10m]) > 2)
+          and on(instance) (siri_remote_bridge_maintenance == 0)
+        for: 1m
+        labels: {severity: warning, service: siri-remote-bridge}
+        annotations:
+          summary: Siri Remote bridge cannot deliver commands reliably
+          description: Check HA reachability and automation traces. Old commands are deliberately never retried.
