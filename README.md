@@ -29,7 +29,7 @@ A remote's own compatibility with an Apple TV does not guarantee compatibility w
 
 ### Apple TV and Home Assistant
 
-The installation tested here uses an Apple TV with the USB-C remote paired to the Linux receiver. Apple lists both [3rd-generation](https://www.apple.com/shop/product/mw5g3am/a/siri-remote) and [4th-generation](https://www.apple.com/shop/product/mlfc4am/a/siri-remote) Siri Remotes as compatible with Apple TV 4K (1st generation) and later, plus Apple TV HD. The [Home Assistant Apple TV integration](https://www.home-assistant.io/integrations/apple_tv/) supports Apple TV devices of any generation and provides the `remote` and `media_player` entities this bridge uses. Individual commands can vary by Apple TV, tvOS version, and app; Apple's direct-pairing compatibility is not a bridge test.
+The installation tested here uses an **Apple TV 4K (4th generation)** with the USB-C remote paired to the Linux receiver. Apple lists both [3rd-generation](https://www.apple.com/shop/product/mw5g3am/a/siri-remote) and [4th-generation](https://www.apple.com/shop/product/mlfc4am/a/siri-remote) Siri Remotes as compatible with Apple TV 4K (1st generation) and later, plus Apple TV HD. The [Home Assistant Apple TV integration](https://www.home-assistant.io/integrations/apple_tv/) supports Apple TV devices of any generation and provides the `remote` and `media_player` entities this bridge uses. Individual commands can vary by Apple TV, tvOS version, and app; Apple's direct-pairing compatibility is not a bridge test.
 
 | Requirement | Verified configuration and limit |
 | --- | --- |
