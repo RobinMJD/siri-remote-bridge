@@ -10,8 +10,8 @@ import queue
 import re
 import selectors
 import signal
-import ssl
 import subprocess
+import sys
 import threading
 import time
 
@@ -168,7 +168,7 @@ def validate_config(config):
     port = config.get("port")
     if type(port) is not int or not 1 <= port <= 65535:
         raise ValueError("Invalid endpoint port")
-    if config.get("scheme", "http") not in ("http", "https"):
+    if config.get("scheme") not in ("http", "https"):
         raise ValueError("Only HTTP or verified HTTPS is supported")
     if not isinstance(config.get("device_id", "siri_remote_bridge"), str) or not re.fullmatch(
         r"[a-zA-Z0-9_-]{1,64}", config.get("device_id", "siri_remote_bridge")
@@ -181,47 +181,43 @@ def validate_config(config):
 
 
 def transport(config, button):
-    body = json.dumps(
-        {
-            "device": config.get("device_id", "siri_remote_bridge"),
-            "button": button,
-            "sent_at": time.time(),
-        }
-    )
-    if config.get("scheme", "http") == "https":
-        connection = http.client.HTTPSConnection(
-            config["host"], config["port"], timeout=0.4, context=ssl.create_default_context()
-        )
-    else:
-        connection = http.client.HTTPConnection(config["host"], config["port"], timeout=0.4)
     started = time.monotonic()
     try:
-        connection.request(
-            "POST",
-            "/api/webhook/" + config["webhook_id"],
-            body=body,
-            headers={"Content-Type": "application/json"},
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-I",
+                str(pathlib.Path(__file__).with_name("webhook_request.py")),
+                button,
+            ],
+            input=json.dumps(config),
+            text=True,
+            capture_output=True,
+            timeout=0.4,
+            check=False,
         )
-        status = connection.getresponse().status
+        reply = json.loads(result.stdout) if result.returncode == 0 else {}
+        status = reply.get("status", 0)
+        if type(status) is not int or not 100 <= status <= 599:
+            status = 0
         print(
             json.dumps(
                 {
                     "button": button,
                     "http_status": status,
                     "elapsed_ms": round((time.monotonic() - started) * 1000),
+                    "retry": False,
                 }
             ),
             flush=True,
         )
         return status
-    except (OSError, http.client.HTTPException) as error:
+    except (OSError, subprocess.TimeoutExpired, ValueError) as error:
         print(
             json.dumps({"button": button, "error": type(error).__name__, "retry": False}),
             flush=True,
         )
-        raise
-    finally:
-        connection.close()
+        return 0
 
 
 class Link:

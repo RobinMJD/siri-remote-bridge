@@ -11,7 +11,7 @@ trap cleanup EXIT INT TERM
 python3 - "$tmp/config.json" <<'PY'
 import json,os,sys
 with open(sys.argv[1], 'w') as handle:
-    json.dump({'host':'192.0.2.10','port':8123,'webhook_id':'0'*64,
+    json.dump({'host':'192.0.2.10','port':8123,'scheme':'http','webhook_id':'0'*64,
                'address':'00:11:22:33:44:55'},handle)
 os.chmod(sys.argv[1],0o444)
 PY
