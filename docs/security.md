@@ -18,6 +18,20 @@ Host networking means BlueZ inherits the host network namespace. The disabled
 network/audio plugins and no public service requirement do not substitute for
 a host firewall. Inspect listeners when changing BlueZ/plugins.
 
+The BlueZ image rebuilds Debian trixie's `5.82-1.1` package as
+`5.82-1.1+bridge1`. The only source change backports BlueZ's device-name length
+fix for CVE-2026-80186; that parser is reachable during a bonded connection as
+well as discovery. The build pins the Debian source files by SHA-256 and runs
+BlueZ's EIR parser tests, including a 253-byte malformed name and a maximum
+valid name. It stops if Debian replaces the base `5.82-1.1` package, so a later
+security release is not silently overwritten by this backport. A2DP and AVRCP
+remain disabled, so their reported BlueZ parser flaws are outside this
+deployment's active plugins. A package scanner may still list CVE-2026-80186
+because this project version is not a Debian security
+release; the applied source patch and build tests are the evidence for this
+backport. Other BlueZ and system-library findings require separate assessment.
+No software patch eliminates the host capability or radio trust boundary.
+
 ## Secrets and trust
 
 The random webhook is a **scoped credential**. Anyone obtaining it with LAN
@@ -45,11 +59,12 @@ may have reached Home Assistant even if its response was lost. Power sleep is a
 deliberate one-second hold; a short press opens the native power menu or wakes a sleeping
 device. It never confirms the highlighted shutdown item automatically.
 
-Base images, GitHub Actions and decoder source are pinned. apt upgrades and
-packages come from signed Debian repositories at build time; Cargo uses the
-upstream lockfile. This improves auditability, not bit-for-bit reproducibility or a
-guarantee that the pins remain patched. Review dependency PRs, rebuild with
-current security packages, scan images, and repeat hardware tests before rollout.
+Base images, BlueZ source archives, GitHub Actions and decoder source are
+pinned. apt upgrades and packages come from signed Debian repositories at
+build time; Cargo uses the upstream lockfile. This improves auditability, not
+bit-for-bit reproducibility or a guarantee that the pins remain patched. Review
+dependency PRs, rebuild with current security packages, scan images, and repeat
+hardware tests before rollout.
 
 Back up private state encrypted and access-controlled. Restore only to the same
 adapter identity where possible; a replacement radio normally requires deliberate

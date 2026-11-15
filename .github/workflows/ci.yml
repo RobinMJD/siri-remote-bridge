@@ -18,6 +18,7 @@ jobs:
       - run: ruff check . && ruff format --check .
       - run: python -m compileall -q .
       - run: sh -n bluez-entrypoint.sh
+      - run: sh -n scripts/build-bluez-backport.sh
       - run: docker compose config -q
   build:
     runs-on: ubuntu-24.04

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Rebuild Debian trixie's BlueZ 5.82 package with an adapted upstream fix for
+  CVE-2026-80186, which can parse a remote device name during reconnect. Run
+  BlueZ's EIR parser tests during the image build; the audio plugins remain off.
+
 - Require an explicit webhook transport choice for new installs and a trusted-LAN
   acknowledgement for HTTP. Existing explicit HTTP configurations still load.
 - Bound the entire webhook request with a disposable process so a slow response

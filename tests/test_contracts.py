@@ -1,6 +1,7 @@
 """Deployment contracts that must hold even without Bluetooth hardware in CI."""
 
 import pathlib
+import re
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -31,7 +32,9 @@ class Contracts(unittest.TestCase):
         source = (ROOT / "Dockerfile").read_text()
         self.assertIn("--checksum=sha256:", source)
         self.assertIn("cargo build --locked", source)
-        self.assertEqual(source.count("@sha256:"), 3)
+        bases = re.findall(r"^FROM\s+(\S+)", source, re.MULTILINE)
+        self.assertTrue(bases)
+        self.assertTrue(all("@sha256:" in base for base in bases))
 
     def test_compose_is_unattended_but_not_privileged(self):
         source = (ROOT / "compose.yaml").read_text()

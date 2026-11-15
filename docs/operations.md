@@ -117,6 +117,13 @@ stopping the old stack. Tag working images locally for rollback; do not prune
 them during maintenance. Recreate only this stack and verify a real navigation,
 hold, mute and sleep/wake cycle plus disconnect recovery.
 
+After building the BlueZ backport, `docker compose run --rm --no-deps
+--entrypoint dpkg-query bluez -W bluez` should report `5.82-1.1+bridge1`.
+The image build runs the EIR parser regression, but it cannot prove physical
+pairing or reconnect. Rollback to an older BlueZ image also restores the
+unpatched EIR parser; keep the old image only as a recovery option and assess
+radio exposure before using it.
+
 On failure, stop the candidate, preserve its state/evidence, restore exact
 prechange Compose/source/image IDs and restore cold state only if needed.
 Never overwrite newer private state blindly or reset another service to get a
