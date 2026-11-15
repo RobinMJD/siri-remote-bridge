@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Lead the README with the simultaneous two-remotes use case and a scalable
+  diagram of the Bluetooth and local-network paths.
+
 - Lower only Select's hold decision threshold from 650 to 250 ms after physical
   feedback about added latency. Back/Home/Power thresholds are unchanged; a
   249 ms click remains a click and holding never sends an initial tap.
