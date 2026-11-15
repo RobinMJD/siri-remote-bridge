@@ -6,10 +6,11 @@ this bridge sends its buttons through Home Assistant to the **same Apple TV**.
 Both remotes can control it at the same time. This also helps when the Apple TV
 is hidden or too far away for a reliable direct Bluetooth connection.
 
-![Two Siri Remotes controlling one Apple TV: the main remote connects directly, while the additional remote connects through a Linux receiver](docs/assets/two-remotes-one-apple-tv.png)
+![Two Siri Remotes controlling one Apple TV: blue Bluetooth links connect the main remote directly and the added remote to the virtual bridge; green local-network links route the bridge through Home Assistant](docs/assets/two-remotes-one-apple-tv.png)
 
-*The upper remote is paired directly with Apple TV; the lower remote is paired
-with the receiver. The receiver sends its commands over the local network.*
+*Blue shows Bluetooth; green shows the local network (Wi-Fi or Ethernet). The
+floating Siri Remote Bridge panel is software running on Linux, shown here in a
+VM. Home Assistant forwards the added remote's commands to Apple TV.*
 
 The added remote handles most everyday buttons: navigation, Select and held
 Select, Back, Home, playback, volume, and Power. Siri voice and touch swipes are
