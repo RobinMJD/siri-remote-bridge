@@ -1,5 +1,10 @@
 # Validation scope
 
+Current suite: 61 unit/contract tests. Center Select now has deferred tap/hold
+handling and short Power has a separate native menu/wake mapping. These new
+behaviors need a physical app/menu check in addition to software tests; do not
+interpret older prototype button acceptance as acceptance of this update.
+
 Initial software suite: 51 unit/contract tests covering button mapping and hold
 thresholds, bounded repeats, fresh/stale reports, disconnect queue generations,
 backend replacement, missing bonds, manual authentication recovery, worker

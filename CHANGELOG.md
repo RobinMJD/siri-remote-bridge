@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Add center Select hold: defer a normal click until release and send one native
+  held-Select event, without opening/playing the item first. Requires the matching
+  HA `select_hold` allowlist and command branch; no decoder or pairing change.
+- Short Power opens the native power-focused menu when awake, or wakes when
+  asleep; long Power still sleeps once. Never auto-confirm shutdown. Keep the
+  old `wakeup` event supported for rolling rollback.
+
 - Permit bounded 250 ms cross-host clock skew in the HA freshness condition;
   preserve the one-second expiry for old input. A synchronized VM only 8 ms
   behind the sender otherwise silently dropped every button despite HTTP 200.

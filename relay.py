@@ -22,7 +22,7 @@ BUTTONS = {
     0x0002: "volume_up",
     0x0004: "volume_down",
     0x0008: "select",
-    0x0010: "wakeup",
+    0x0010: "power_menu",
     0x0040: "menu",
     0x0080: "mute",
     0x0100: "play_pause",
@@ -34,8 +34,9 @@ BUTTONS = {
 REPEATING = {"up", "down", "left", "right", "volume_up", "volume_down"}
 DEFERRED = {
     0x0001: ("home", "control_center"),
+    0x0008: ("select", "select_hold"),
     0x0040: ("menu", "menu_hold"),
-    0x0010: ("wakeup", "suspend"),
+    0x0010: ("power_menu", "suspend"),
 }
 HOLD_SECONDS = 0.65
 HOLD_THRESHOLDS = {0x0010: 1.0}
