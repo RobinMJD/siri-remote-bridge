@@ -113,7 +113,7 @@ VM is required, and the relay publishes no port or general HA API credential.
 | Input | Default event / example behavior |
 | --- | --- |
 | Arrows | Navigation; repeats after 350 ms at 150 ms intervals, bounded to 3 s |
-| Select tap / hold 650 ms | Click on release / native held-Select context menu |
+| Select tap / hold 250 ms | Click on release / native held-Select context menu |
 | Back tap / hold 650 ms | Back / native held-menu to Home Screen |
 | TV/Home tap / hold 650 ms | Home / Control Centre |
 | Play/Pause | HA media play/pause |

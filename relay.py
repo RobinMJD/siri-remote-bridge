@@ -39,7 +39,7 @@ DEFERRED = {
     0x0010: ("power_menu", "suspend"),
 }
 HOLD_SECONDS = 0.65
-HOLD_THRESHOLDS = {0x0010: 1.0}
+HOLD_THRESHOLDS = {0x0008: 0.25, 0x0010: 1.0}
 REPORT = re.compile(r"^(\S+) input report_id=0xFB raw=([0-9a-fA-F]{2}) ([0-9a-fA-F]{2}) \|")
 MAX_AGE = 0.5
 

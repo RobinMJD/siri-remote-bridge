@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Lower only Select's hold decision threshold from 650 to 250 ms after physical
+  feedback about added latency. Back/Home/Power thresholds are unchanged; a
+  249 ms click remains a click and holding never sends an initial tap.
+
 - Add center Select hold: defer a normal click until release and send one native
   held-Select event, without opening/playing the item first. Requires the matching
   HA `select_hold` allowlist and command branch; no decoder or pairing change.
