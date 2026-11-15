@@ -12,7 +12,17 @@ time.sleep(5)
 PY
 peer=$!
 trap 'kill "$peer" 2>/dev/null || true' EXIT INT TERM
-sleep 1
+ready=false
+for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
+    if dbus-send --system --print-reply --dest=org.freedesktop.DBus \
+        /org/freedesktop/DBus org.freedesktop.DBus.NameHasOwner \
+        string:org.bluez 2>/dev/null | grep -q 'boolean true'; then
+        ready=true
+        break
+    fi
+    sleep 0.1
+done
+[ "$ready" = true ] || { echo 'Test BlueZ peer did not register' >&2; exit 1; }
 
 allowed=$(su -s /bin/sh receiver -c \
     'dbus-send --system --print-reply --reply-timeout=500 --dest=org.bluez / org.freedesktop.DBus.ObjectManager.GetManagedObjects' 2>&1 || true)
@@ -23,6 +33,7 @@ esac
 
 for forbidden in \
     'org.freedesktop.DBus.Properties.Set string:org.bluez.Adapter1 string:Pairable variant:boolean:true' \
+    'org.bluez.Adapter1.StartDiscovery' \
     'org.bluez.Device1.Pair' \
     'org.bluez.Adapter1.RemoveDevice'; do
     denied=$(su -s /bin/sh receiver -c \

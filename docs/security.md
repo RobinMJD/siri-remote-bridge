@@ -8,9 +8,10 @@ full isolation against a malicious BlueZ daemon. No container is privileged;
 there is no host D-Bus, Docker socket, uinput, host filesystem or published port.
 The decoder/relay is UID 65532, capability-free, no-new-privileges, read-only,
 resource-limited. D-Bus allows only root and that UID. The receiver's BlueZ
-calls are allowlisted for status, discovery, bonded reconnect and HID GATT;
+calls are allowlisted for status, bonded reconnect and HID GATT;
 pairing, bond removal and adapter property writes are denied to it. The GATT
-write and scan methods remain necessary capabilities on this dedicated adapter.
+write methods remain necessary capabilities on this dedicated adapter. Discovery
+is reserved for the explicit root pairing flow; the relay relies on the stored bond.
 Restrict the Linux host and physical radio access accordingly.
 
 Host networking means BlueZ inherits the host network namespace. The disabled
@@ -44,9 +45,9 @@ may have reached Home Assistant even if its response was lost. Power sleep is a
 deliberate one-second hold; a short press opens the native power menu or wakes a sleeping
 device. It never confirms the highlighted shutdown item automatically.
 
-Base images, GitHub Actions and decoder source are pinned. apt packages come
-from the signed Debian repositories at build time; Cargo uses the upstream
-lockfile. This improves auditability, not bit-for-bit reproducibility or a
+Base images, GitHub Actions and decoder source are pinned. apt upgrades and
+packages come from signed Debian repositories at build time; Cargo uses the
+upstream lockfile. This improves auditability, not bit-for-bit reproducibility or a
 guarantee that the pins remain patched. Review dependency PRs, rebuild with
 current security packages, scan images, and repeat hardware tests before rollout.
 

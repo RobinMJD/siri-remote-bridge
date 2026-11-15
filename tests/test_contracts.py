@@ -18,6 +18,7 @@ class Contracts(unittest.TestCase):
         self.assertIn(("org.bluez.GattCharacteristic1", "StartNotify"), allowed)
         self.assertIn(("org.freedesktop.DBus.ObjectManager", "GetManagedObjects"), allowed)
         self.assertNotIn(("org.freedesktop.DBus.Properties", "Set"), allowed)
+        self.assertNotIn(("org.bluez.Adapter1", "StartDiscovery"), allowed)
         self.assertNotIn(("org.bluez.Device1", "Pair"), allowed)
         self.assertNotIn(("org.bluez.Adapter1", "RemoveDevice"), allowed)
         for rule in receiver.findall("allow"):
