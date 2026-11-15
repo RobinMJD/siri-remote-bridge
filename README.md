@@ -84,6 +84,24 @@ Proxmox is optional. If using a VM, pass the Bluetooth adapter through persisten
 
 ## Set up
 
+This repository is a Docker Compose project: [compose.yaml](compose.yaml)
+defines the BlueZ and relay containers together, and [.env.example](.env.example)
+shows the optional state-directory setting. Clone the whole repository because
+the images are built from its Dockerfile and source. Docker Compose finds
+`compose.yaml` automatically, so the commands below work without copying a
+separate YAML file. The receiver may be a Linux host or a Linux VM with the
+dedicated Bluetooth adapter attached.
+
+If your Compose interface accepts a Git repository **and builds images from its
+source**, use `https://github.com/RobinMJD/siri-remote-bridge.git` as the
+repository URL and `compose.yaml` as the Compose path. Choose an absolute
+`STATE_DIRECTORY` on the Linux receiver from the start; replace `private` with
+that path in the commands below. Complete the one-time pairing and Home
+Assistant steps in a local checkout. Then run `docker compose down` there
+(without `-v`) before deploying the project through your interface. Set the
+same `STATE_DIRECTORY` in the interface. Never run both projects against the
+same Bluetooth adapter or bond directory.
+
 ### 1. Build and prepare private state
 
 Clone a reviewed release or commit on the Linux receiver. These commands use the repository's local `private/` directory. For a system install, set `STATE_DIRECTORY` in `.env` to an absolute local path and create the same subdirectories there. Never put private state in a shared or publicly served directory.
@@ -91,6 +109,9 @@ Clone a reviewed release or commit on the Linux receiver. These commands use the
 ```sh
 git clone https://github.com/RobinMJD/siri-remote-bridge.git
 cd siri-remote-bridge
+cp .env.example .env
+# For a system install, edit STATE_DIRECTORY in .env and use that path below.
+docker compose config -q
 docker compose build bluez relay
 sudo install -d -m 0700 private private/bluetooth
 sudo install -d -m 0755 private/bus private/secrets

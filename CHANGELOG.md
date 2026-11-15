@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Link the complete Compose project and environment template directly from the
+  setup guide, with a configuration check before building the containers.
+
 - Lead the README with the simultaneous two-remotes use case and a scalable
   diagram of the Bluetooth and local-network paths.
 
