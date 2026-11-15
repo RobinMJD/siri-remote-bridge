@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Require an explicit webhook transport choice for new installs and a trusted-LAN
+  acknowledgement for HTTP. Existing explicit HTTP configurations still load.
+- Bound the entire webhook request with a disposable process so a slow response
+  cannot stall the sole sender; preserve command expiry and no retries.
+- Replace the receiver's broad BlueZ D-Bus permission with named methods needed
+  by the pinned decoder; pairing and bond removal remain root-only.
+
 - Link the complete Compose project and environment template directly from the
   setup guide, with a configuration check before building the containers.
 

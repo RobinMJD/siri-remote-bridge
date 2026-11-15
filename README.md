@@ -62,7 +62,7 @@ The installation tested here uses an **Apple TV 4K (4th generation)** with the U
 | Linux Bluetooth receiver | Debian 13, Linux 6.12, and one dedicated Intel BLE USB adapter tested. No minimum kernel or BlueZ release has been qualified. |
 | Containers | Docker Engine with **Docker Compose v2** required. No minimum Engine or Compose point release has been established. Docker Desktop on macOS is not a supported Bluetooth receiver. |
 | Home Assistant | Apple TV integration, webhook automations, and `remote.send_command` with `hold_secs`. **2026.8.1** tested; an earlier minimum has not been established. |
-| Network and time | Receiver can reach Home Assistant on a trusted private LAN; Home Assistant can reach Apple TV. The default HTTP webhook is unencrypted; verified HTTPS is available. Synchronize the two hosts' clocks so stale button events are rejected correctly. |
+| Network and time | Receiver can reach Home Assistant on a private LAN; Home Assistant can reach Apple TV. Choose verified HTTPS where available. HTTP requires an explicit trusted-LAN opt-in because it exposes the scoped webhook secret to observers on that route. Synchronize the two hosts' clocks so stale button events are rejected correctly. |
 | Other hardware | Other BlueZ-compatible adapters and ARM64 builds may work, but need qualification on that hardware. Use exactly one adapter for this bridge. |
 
 Proxmox is optional. If using a VM, pass the Bluetooth adapter through persistently and install its firmware inside the guest. Do not share the adapter with another Bluetooth stack. See [hardware compatibility](docs/hardware.md) for the tested setup and limits.
@@ -131,14 +131,14 @@ Confirm the bonded **identity address**, rather than a rotating advertisement ad
 
 ### 3. Create the scoped Home Assistant webhook
 
-Substitute your Home Assistant hostname, port, and bonded remote identity:
+Substitute your Home Assistant hostname, port, and bonded remote identity. Use a hostname with a certificate trusted by the receiver for HTTPS:
 
 ```sh
-sudo python3 configure.py --host homeassistant.local --port 8123 \
+sudo python3 configure.py --host ha.example.com --port 443 --scheme https \
   --address AA:BB:CC:DD:EE:FF --state-dir private
 ```
 
-Use your configured `STATE_DIRECTORY` as `--state-dir` if you chose a different path. The helper generates a random webhook secret without printing it and refuses to overwrite existing configuration. Transfer `private/home-assistant-secret.yaml` securely into Home Assistant's `secrets.yaml`. The relay receives only this scoped webhook, never a general Home Assistant API token. See [configuration](docs/configuration.md) for the fields and HTTPS option.
+If Home Assistant is only available over HTTP on a trusted private LAN, explicitly choose `--scheme http --trusted-lan-http --port 8123` instead. Anyone able to observe that traffic can obtain the scoped webhook secret. Use your configured `STATE_DIRECTORY` as `--state-dir` if you chose a different path. The helper generates a random webhook secret without printing it and refuses to overwrite existing configuration. Transfer `private/home-assistant-secret.yaml` securely into Home Assistant's `secrets.yaml`. The relay receives only this scoped webhook, never a general Home Assistant API token. See [configuration](docs/configuration.md) for the fields and transport options.
 
 ### 4. Install the Home Assistant automation
 

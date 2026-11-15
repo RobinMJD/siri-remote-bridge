@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libdbus-1-3 libpipewire-0.3-0 libopus0 python3 python3-dbus \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /src/target/release/siri-remote /usr/local/bin/siri-remote
-COPY relay.py bluez_status.py healthcheck.py /opt/siri-remote/
+COPY relay.py webhook_request.py bluez_status.py healthcheck.py /opt/siri-remote/
 USER 65532:65532
 ENV DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/siri-test/system_bus_socket \
     PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1

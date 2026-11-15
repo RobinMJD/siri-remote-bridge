@@ -1,7 +1,7 @@
 {
-  "host": "homeassistant.local",
-  "port": 8123,
-  "scheme": "http",
+  "host": "ha.example.com",
+  "port": 443,
+  "scheme": "https",
   "device_id": "siri_remote_bridge",
   "webhook_id": "REPLACE_WITH_64_HEX_CHARACTERS",
   "address": "00:00:00:00:00:00"

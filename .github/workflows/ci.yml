@@ -25,6 +25,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: docker compose build bluez relay
       - run: sh tests/smoke-container.sh
+      - name: Check receiver D-Bus permissions
+        run: >-
+          docker run --rm --network none --read-only --cap-drop ALL
+          --cap-add SETUID --cap-add SETGID --tmpfs /run/siri-test:mode=0755
+          --entrypoint /bin/sh -v "$PWD/tests/smoke-dbus.sh:/smoke-dbus.sh:ro"
+          local/siri-remote-bridge-bluez:0.1.0 /smoke-dbus.sh
       - name: Test deployed Linux image without a radio
         run: >-
           docker run --rm --network none --read-only --cap-drop ALL --tmpfs /tmp:mode=1777

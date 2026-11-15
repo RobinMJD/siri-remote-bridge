@@ -13,13 +13,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", required=True)
     parser.add_argument("--port", type=int, default=8123)
-    parser.add_argument("--scheme", choices=["http", "https"], default="http")
+    parser.add_argument("--scheme", choices=["http", "https"], required=True)
+    parser.add_argument(
+        "--trusted-lan-http",
+        action="store_true",
+        help="Acknowledge that HTTP reveals the scoped webhook secret on its LAN route",
+    )
     parser.add_argument(
         "--address", required=True, help="Bonded identity address, not rotating advertisement"
     )
     parser.add_argument("--device-id", default="siri_remote_bridge")
     parser.add_argument("--state-dir", type=Path, default=Path("private"))
     args = parser.parse_args()
+    if args.scheme == "http" and not args.trusted_lan_http:
+        parser.error("HTTP requires --trusted-lan-http; prefer verified HTTPS")
+    if args.scheme == "https" and args.trusted_lan_http:
+        parser.error("--trusted-lan-http is only for HTTP")
     if os.geteuid() != 0:
         parser.error("Run as root to protect bond data and set UID 65532 secret ownership")
     config = {

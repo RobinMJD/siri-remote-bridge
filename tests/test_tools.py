@@ -97,6 +97,8 @@ class ToolsTests(unittest.TestCase):
                 "configure.py",
                 "--host",
                 "homeassistant.local",
+                "--scheme",
+                "https",
                 "--address",
                 "AA:BB:CC:DD:EE:FF",
                 "--state-dir",
@@ -107,6 +109,7 @@ class ToolsTests(unittest.TestCase):
             config_file = root / "secrets/ha_webhook.json"
             config = json.loads(config_file.read_text())
             self.assertEqual(len(config["webhook_id"]), 64)
+            self.assertEqual(config["scheme"], "https")
             self.assertEqual(config_file.stat().st_mode & 0o777, 0o400)
             self.assertIn(config["webhook_id"], (root / "home-assistant-secret.yaml").read_text())
             with (
@@ -116,6 +119,48 @@ class ToolsTests(unittest.TestCase):
             ):
                 configure.main()
             self.assertEqual(config, json.loads(config_file.read_text()))
+
+    @patch("configure.os.geteuid", return_value=0)
+    def test_http_requires_explicit_trusted_lan_opt_in(self, _uid):
+        with tempfile.TemporaryDirectory() as temp:
+            args = [
+                "configure.py",
+                "--host",
+                "homeassistant.local",
+                "--address",
+                "AA:BB:CC:DD:EE:FF",
+                "--state-dir",
+                temp,
+            ]
+            for extra in [[], ["--scheme", "http"]]:
+                with (
+                    patch("sys.argv", args + extra),
+                    contextlib.redirect_stderr(io.StringIO()),
+                    self.assertRaises(SystemExit),
+                ):
+                    configure.main()
+            self.assertFalse((Path(temp) / "secrets/ha_webhook.json").exists())
+
+    @patch("configure.os.fchown")
+    @patch("configure.os.geteuid", return_value=0)
+    def test_explicit_trusted_lan_http_creates_config(self, _uid, _chown):
+        with tempfile.TemporaryDirectory() as temp:
+            args = [
+                "configure.py",
+                "--host",
+                "homeassistant.local",
+                "--address",
+                "AA:BB:CC:DD:EE:FF",
+                "--state-dir",
+                temp,
+                "--scheme",
+                "http",
+                "--trusted-lan-http",
+            ]
+            with patch("sys.argv", args), contextlib.redirect_stdout(io.StringIO()):
+                configure.main()
+            config = json.loads((Path(temp) / "secrets/ha_webhook.json").read_text())
+            self.assertEqual(config["scheme"], "http")
 
 
 if __name__ == "__main__":

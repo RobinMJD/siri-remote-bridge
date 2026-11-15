@@ -7,8 +7,11 @@ Bluetooth/L2CAP control plane. This is a residual host capability boundary, not
 full isolation against a malicious BlueZ daemon. No container is privileged;
 there is no host D-Bus, Docker socket, uinput, host filesystem or published port.
 The decoder/relay is UID 65532, capability-free, no-new-privileges, read-only,
-resource-limited. D-Bus allows only root and that UID and denies it pairing and
-bond removal. Restrict the Linux host and physical radio access accordingly.
+resource-limited. D-Bus allows only root and that UID. The receiver's BlueZ
+calls are allowlisted for status, discovery, bonded reconnect and HID GATT;
+pairing, bond removal and adapter property writes are denied to it. The GATT
+write and scan methods remain necessary capabilities on this dedicated adapter.
+Restrict the Linux host and physical radio access accordingly.
 
 Host networking means BlueZ inherits the host network namespace. The disabled
 network/audio plugins and no public service requirement do not substitute for
@@ -19,7 +22,9 @@ a host firewall. Inspect listeners when changing BlueZ/plugins.
 The random webhook is a **scoped credential**. Anyone obtaining it with LAN
 access can imitate this remote's allowed commands. The device marker/timestamp
 are validation, not independent authentication. HTTP on a LAN can be observed
-or tampered with: use a trusted LAN/VLAN or verified HTTPS. Do not publish the
+or tampered with: use verified HTTPS when available or opt into HTTP only on a
+trusted LAN/VLAN. The setup helper requires an explicit transport choice and
+acknowledgement for HTTP. Do not publish the
 webhook or relax local-only checks behind an external proxy to bypass routing.
 
 Never commit `.env`, `private/`, HA secrets or Bluetooth bond files. An adapter
@@ -32,8 +37,11 @@ only logs connection state and delivered action metadata, not those payloads.
 
 No automatic re-pairing, blanket Bluetooth reset, bond deletion, host service
 restart or broad token fallback is allowed. A bad bond is intentionally manual.
-No command is retried after an ambiguous HTTP result. Power sleep is a deliberate
-one-second hold; a short press opens the native power menu or wakes a sleeping
+No command is retried after an ambiguous HTTP result. Each webhook request is
+isolated in a child process; the parent terminates it when its 400 ms wait
+expires. Startup and termination add some overhead, and a timed-out request
+may have reached Home Assistant even if its response was lost. Power sleep is a
+deliberate one-second hold; a short press opens the native power menu or wakes a sleeping
 device. It never confirms the highlighted shutdown item automatically.
 
 Base images, GitHub Actions and decoder source are pinned. apt packages come

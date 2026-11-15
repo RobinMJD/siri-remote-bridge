@@ -1,8 +1,12 @@
+import socket
+import threading
+import time
 import unittest
 from unittest.mock import patch
 
 from healthcheck import healthy
 from relay import Link, Sender, transport, validate_config
+from webhook_request import send
 
 READY = {
     "available": True,
@@ -117,6 +121,7 @@ class ConfigTests(unittest.TestCase):
         self.config = {
             "host": "homeassistant.local",
             "port": 8123,
+            "scheme": "http",
             "address": "00:11:22:33:44:55",
             "webhook_id": "a" * 64,
         }
@@ -135,6 +140,7 @@ class ConfigTests(unittest.TestCase):
             {"port": 0},
             {"port": 65536},
             {"scheme": "ftp"},
+            {"scheme": None},
             {"device_id": "../../anything"},
             {"webhook_id": "weak"},
             {"address": "*"},
@@ -142,13 +148,80 @@ class ConfigTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_config({**self.config, **extra})
 
-    @patch("relay.http.client.HTTPSConnection")
+    @patch("webhook_request.http.client.HTTPSConnection")
     def test_https_requires_default_certificate_verification(self, connection):
         connection.return_value.getresponse.return_value.status = 200
-        transport({**self.config, "scheme": "https"}, "wakeup")
+        send({**self.config, "scheme": "https"}, "wakeup")
         context = connection.call_args.kwargs["context"]
         self.assertTrue(context.check_hostname)
         self.assertEqual(context.verify_mode, 2)
+
+    def test_response_drip_cannot_stall_sender(self):
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            listener.listen(1)
+            listener.settimeout(2)
+
+            def drip():
+                try:
+                    with listener.accept()[0] as peer:
+                        peer.settimeout(2)
+                        peer.recv(4096)
+                        for byte in b"HTTP/1.1 200 OK\r\n":
+                            peer.sendall(bytes([byte]))
+                            time.sleep(0.15)
+                except (OSError, TimeoutError):
+                    pass
+
+            thread = threading.Thread(target=drip, daemon=True)
+            thread.start()
+            started = time.monotonic()
+            status = transport(
+                {**self.config, "host": "127.0.0.1", "port": listener.getsockname()[1]},
+                "wakeup",
+            )
+            elapsed = time.monotonic() - started
+            self.assertEqual(status, 0)
+            self.assertLess(elapsed, 0.8)
+            thread.join(timeout=1)
+
+    def test_isolated_request_delivers_one_scoped_command(self):
+        received = []
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            listener.listen(1)
+            listener.settimeout(2)
+
+            def reply():
+                with listener.accept()[0] as peer:
+                    peer.settimeout(2)
+                    data = b""
+                    while b"\r\n\r\n" not in data:
+                        data += peer.recv(4096)
+                    headers, body = data.split(b"\r\n\r\n", 1)
+                    length = int(
+                        next(
+                            line.split(b":", 1)[1].strip()
+                            for line in headers.split(b"\r\n")
+                            if line.lower().startswith(b"content-length:")
+                        )
+                    )
+                    while len(body) < length:
+                        body += peer.recv(4096)
+                    received.append(headers + b"\r\n\r\n" + body)
+                    peer.sendall(b"HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n")
+
+            thread = threading.Thread(target=reply, daemon=True)
+            thread.start()
+            status = transport(
+                {**self.config, "host": "127.0.0.1", "port": listener.getsockname()[1]},
+                "wakeup",
+            )
+            thread.join(timeout=1)
+            self.assertEqual(status, 200)
+            self.assertEqual(len(received), 1)
+            self.assertIn(b"POST /api/webhook/" + b"a" * 64, received[0])
+            self.assertIn(b'"button": "wakeup"', received[0])
 
 
 if __name__ == "__main__":
