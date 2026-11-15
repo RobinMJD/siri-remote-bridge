@@ -13,18 +13,20 @@
         {{ trigger.json is mapping
            and trigger.json.get('device') == 'siri_remote_bridge'
            and trigger.json.get('button') in
-             ['up','down','left','right','select','menu','menu_hold','home',
-              'control_center','play_pause','volume_up','volume_down','mute','wakeup','suspend']
-           and 0 <= as_timestamp(now()) - (trigger.json.get('sent_at',0) | float(0)) < 1 }}
+             ['up','down','left','right','select','select_hold','menu','menu_hold','home',
+              'control_center','play_pause','volume_up','volume_down','mute','wakeup','power_menu','suspend']
+           and -0.25 <= as_timestamp(now()) - (trigger.json.get('sent_at',0) | float(0)) < 1 }}
     - condition: template
       value_template: >-
-        {{ trigger.json.button in ['mute','wakeup'] or is_state('remote.apple_tv','on') }}
+        {{ trigger.json.button in ['mute','wakeup','power_menu'] or is_state('remote.apple_tv','on') }}
   actions:
     - choose:
-        - conditions: "{{ trigger.json.button == 'wakeup' }}"
+        - conditions: "{{ trigger.json.button in ['wakeup','power_menu'] }}"
           sequence:
             - condition: template
               value_template: "{{ has_value('remote.apple_tv') }}"
+            - variables:
+                power_needs_wake: "{{ is_state('remote.apple_tv','off') or states('media_player.apple_tv') in ['off','standby'] }}"
             - if: "{{ is_state('remote.apple_tv','off') }}"
               then:
                 - action: remote.turn_on
@@ -34,12 +36,26 @@
                   continue_on_timeout: false
             - action: remote.send_command
               target: {entity_id: remote.apple_tv}
-              data: {command: wakeup, delay_secs: 0, num_repeats: 1}
+              data:
+                command: "{{ 'wakeup' if trigger.json.button == 'wakeup' or power_needs_wake else 'control_center' }}"
+                delay_secs: 0
+                num_repeats: 1
+        - conditions: "{{ trigger.json.button == 'select_hold' }}"
+          sequence:
+            - action: remote.send_command
+              target: {entity_id: remote.apple_tv}
+              data: {command: select, hold_secs: 1, delay_secs: 0, num_repeats: 1}
         - conditions: "{{ trigger.json.button == 'menu_hold' }}"
           sequence:
             - action: remote.send_command
               target: {entity_id: remote.apple_tv}
               data: {command: menu, hold_secs: 1, delay_secs: 0, num_repeats: 1}
+        - conditions: "{{ trigger.json.button == 'control_center' }}"
+          sequence:
+            # A native TV/Home hold differs from Companion's control_center shortcut.
+            - action: remote.send_command
+              target: {entity_id: remote.apple_tv}
+              data: {command: home, hold_secs: 1, delay_secs: 0, num_repeats: 1}
         - conditions: "{{ trigger.json.button == 'play_pause' }}"
           sequence:
             - action: media_player.media_play_pause

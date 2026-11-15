@@ -11,7 +11,7 @@ def probe(address=None):
     bus = dbus.bus.BusConnection(os.environ["DBUS_SYSTEM_BUS_ADDRESS"])
     try:
         objects = dbus.Interface(
-            bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager"
+            bus.get_object("org.bluez", "/", introspect=False), "org.freedesktop.DBus.ObjectManager"
         ).GetManagedObjects(timeout=2)
         adapters = [
             props["org.bluez.Adapter1"]
@@ -26,7 +26,8 @@ def probe(address=None):
         ]
         device = devices[0] if devices else {}
         dbus_api = dbus.Interface(
-            bus.get_object("org.freedesktop.DBus", "/org/freedesktop/DBus"), "org.freedesktop.DBus"
+            bus.get_object("org.freedesktop.DBus", "/org/freedesktop/DBus", introspect=False),
+            "org.freedesktop.DBus",
         )
         return {
             "available": True,
