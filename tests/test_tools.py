@@ -12,6 +12,24 @@ import configure
 
 
 class ToolsTests(unittest.TestCase):
+    def test_power_menu_is_native_shortcut_without_shutdown_confirmation(self):
+        source = (Path(__file__).resolve().parents[1] / "examples/home-assistant.yaml").read_text()
+        self.assertIn("'power_menu'", source.split("actions:", 1)[0])
+        branch = source.split("trigger.json.button in ['wakeup','power_menu']", 1)[1]
+        branch = branch.split("- conditions:", 1)[0]
+        self.assertIn("else 'control_center'", branch)
+        self.assertIn("power_needs_wake", branch)
+        self.assertNotIn("command: select", branch)
+        self.assertNotIn("command: suspend", branch)
+
+    def test_example_select_hold_uses_native_input_not_a_regular_click(self):
+        source = (Path(__file__).resolve().parents[1] / "examples/home-assistant.yaml").read_text()
+        self.assertIn("'select_hold'", source.split("actions:", 1)[0])
+        branch = source.split("trigger.json.button == 'select_hold'", 1)[1]
+        branch = branch.split("- conditions:", 1)[0]
+        self.assertIn("command: select, hold_secs: 1", branch)
+        self.assertIn("num_repeats: 1", branch)
+
     def test_example_freshness_allows_small_clock_skew_but_keeps_old_input_expiry(self):
         source = (Path(__file__).resolve().parents[1] / "examples/home-assistant.yaml").read_text()
         match = re.search(r"and (-?[\d.]+) <= as_timestamp\(now\(\)\).*? < ([\d.]+)", source)

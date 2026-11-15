@@ -14,7 +14,7 @@ Siri Remote -- BLE --> Linux receiver -- scoped webhook --> Home Assistant
 
 **Status: early release, tested on one real installation.** This is not a
 complete replacement for Apple's remote stack. No Siri microphone forwarding,
-swipe gestures, double-clicks or Select-hold context menu are provided. A real
+swipe gestures or double-clicks are provided. A real
 NUC cold reboot and extended unattended soak remain qualification gates, not
 claims established by unit tests. See [hardware](docs/hardware.md) and the
 [validation matrix](docs/validation.md).
@@ -113,17 +113,22 @@ VM is required, and the relay publishes no port or general HA API credential.
 | Input | Default event / example behavior |
 | --- | --- |
 | Arrows | Navigation; repeats after 350 ms at 150 ms intervals, bounded to 3 s |
-| Select | Select tap |
+| Select tap / hold 650 ms | Click on release / native held-Select context menu |
 | Back tap / hold 650 ms | Back / native held-menu to Home Screen |
 | TV/Home tap / hold 650 ms | Home / Control Centre |
 | Play/Pause | HA media play/pause |
 | Volume Up/Down | Apple TV network volume; audio-path dependent |
 | Mute | Optional direct soundbar mute via HA |
-| Power tap / hold 1 s | Wake / sleep once; release never wakes after sleep |
+| Power tap / hold 1 s | Power-focused menu when awake, wake when asleep / sleep once |
 
-Power is deliberately **explicit wake/sleep**, not a state-inferred toggle or
-an exact copy of stock firmware behavior. TV/receiver power depends on existing
-HDMI-CEC. The bridge does not change TV/CEC settings.
+Short Power opens the native power-focused shortcut without confirming sleep;
+it wakes instead when HA reports the device asleep. Long Power explicitly
+sleeps once; release does not emit a second command. It is not a blind power
+toggle. TV/receiver power depends on existing HDMI-CEC; its settings are unchanged.
+Select taps wait for release so holding cannot first open/play the highlighted
+item. The HA example must be updated alongside the relay for `select_hold` and
+`power_menu`; a receiver update alone is insufficient. Native held-input adds
+some latency beyond the bridge's tap/hold threshold.
 
 ## Boot and reconnect
 

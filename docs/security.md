@@ -33,7 +33,8 @@ only logs connection state and delivered action metadata, not those payloads.
 No automatic re-pairing, blanket Bluetooth reset, bond deletion, host service
 restart or broad token fallback is allowed. A bad bond is intentionally manual.
 No command is retried after an ambiguous HTTP result. Power sleep is a deliberate
-one-second hold; a short press can only wake.
+one-second hold; a short press opens the native power menu or wakes a sleeping
+device. It never confirms the highlighted shutdown item automatically.
 
 Base images, GitHub Actions and decoder source are pinned. apt packages come
 from the signed Debian repositories at build time; Cargo uses the upstream

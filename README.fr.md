@@ -15,7 +15,8 @@ Les donnees privees et secrets restent hors du depot.
 
 - Redemarrage automatique des conteneurs, sauf arret volontaire.
 - Reconnexion au lien Bluetooth deja appaire, sans adopter une autre remote.
-- Appui court Power : reveil ; maintien une seconde : veille.
+- Appui court au centre : selection au relachement ; maintien : menu contextuel.
+- Appui court Power : menu d'alimentation si allume, reveil sinon ; maintien : veille.
 - Maintien Home : Centre de controle ; maintien Retour : ecran d'accueil.
 - Pas de Siri/microphone, gestes tactiles ou double-clic dans cette version.
 

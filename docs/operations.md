@@ -79,6 +79,20 @@ Never recover by weakening HA authentication or reusing a secret from a log.
 
 ## Upgrade / rollback
 
+For center-button holds, update the HA event allowlist and add the `select_hold`
+branch before replacing the relay. It sends `select` with `hold_secs: 1`; the
+receiver defers the ordinary click until release and emits a hold only once.
+Test short clicks, a held thumbnail in YouTube, and navigation afterward. App
+menus and supported options are Apple TV/application behavior, not hard-coded
+playlist/channel actions in this bridge.
+
+Short Power now emits `power_menu`: the HA example sends `control_center`
+when awake or `wakeup` when HA reports sleep/disconnection. Long Power still
+emits one explicit `suspend`. The legacy `wakeup` event remains accepted for
+rolling upgrade/rollback. Never append `select` to the Power branch: the user
+must choose whether to confirm shutdown. This differs from TV/Home hold,
+which deliberately uses native held `home` rather than that shortcut.
+
 TV/Home holds emit the compatible `control_center` event, but the HA example
 maps it to `remote.send_command` with `command: home` and `hold_secs: 1`.
 That preserves native button semantics rather than invoking Companion's
