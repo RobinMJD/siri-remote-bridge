@@ -22,7 +22,7 @@ BUTTONS = {
     0x0002: "volume_up",
     0x0004: "volume_down",
     0x0008: "select",
-    0x0010: "wakeup",
+    0x0010: "power_menu",
     0x0040: "menu",
     0x0080: "mute",
     0x0100: "play_pause",
@@ -34,11 +34,12 @@ BUTTONS = {
 REPEATING = {"up", "down", "left", "right", "volume_up", "volume_down"}
 DEFERRED = {
     0x0001: ("home", "control_center"),
+    0x0008: ("select", "select_hold"),
     0x0040: ("menu", "menu_hold"),
-    0x0010: ("wakeup", "suspend"),
+    0x0010: ("power_menu", "suspend"),
 }
 HOLD_SECONDS = 0.65
-HOLD_THRESHOLDS = {0x0010: 1.0}
+HOLD_THRESHOLDS = {0x0008: 0.25, 0x0010: 1.0}
 REPORT = re.compile(r"^(\S+) input report_id=0xFB raw=([0-9a-fA-F]{2}) ([0-9a-fA-F]{2}) \|")
 MAX_AGE = 0.5
 
@@ -360,6 +361,11 @@ def main():
                 for key, _ in selector.select(timeout=0.03):
                     chunk = os.read(key.fileobj.fileno(), 65536)
                     if not chunk:
+                        # EOF is a disconnect too: do not let a deferred hold
+                        # fire during the next backend poll interval.
+                        stop_child()
+                        probe_at = 0
+                        next_start = time.monotonic() + 2
                         break
                     buffer += chunk
                     lines = buffer.split(b"\n")

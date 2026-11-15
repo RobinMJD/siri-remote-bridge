@@ -22,6 +22,15 @@ textfile collector. Alert on stale heartbeat, stopped components, missing radio
 or bond for several minutes; **do not alert on an idle remote alone**. No
 public metrics listener or general Docker-socket exporter is needed.
 
+HTTP 200 does not prove HA accepted a command: an automation can silently fail
+its conditions. The example permits a sender timestamp up to 250 ms ahead of
+HA to tolerate small clock skew between synchronized Linux hosts/VMs, while
+still rejecting commands one second old or older. Keep both clocks synchronized;
+do not enlarge this margin to hide a broken clock. If buttons arrive but do
+nothing, inspect HA automation traces and compare the timestamp condition
+before re-pairing or resetting Bluetooth. A real 8 ms negative age reproduced
+this failure with the earlier zero-tolerance condition.
+
 ## Restart and maintenance
 
 ```sh
@@ -69,6 +78,38 @@ again. Generate a new random scoped webhook and update HA secrets accordingly.
 Never recover by weakening HA authentication or reusing a secret from a log.
 
 ## Upgrade / rollback
+
+For center-button holds, update the HA event allowlist and add the `select_hold`
+branch before replacing the relay. It sends `select` with `hold_secs: 1`; the
+receiver defers the ordinary click until release and emits a hold only once.
+Select uses a 250 ms decision threshold, rather than Back/Home's 650 ms, to
+avoid stacking an unnecessary wait before HA's native held-input action.
+Clicks released before 250 ms remain ordinary clicks. HA translates
+`hold_secs: 1` to its library's Hold action, not a freely tunable duration;
+setting it below one sends a normal click on the qualified HA version.
+Expect some remaining native-hold/network latency; do not patch HA internals
+or send an initial Select click to hide that delay.
+Test short clicks, a held thumbnail in YouTube, and navigation afterward. App
+menus and supported options are Apple TV/application behavior, not hard-coded
+playlist/channel actions in this bridge.
+
+Short Power now emits `power_menu`: the HA example sends `control_center`
+when awake or `wakeup` when HA reports sleep/disconnection. Long Power still
+emits one explicit `suspend`. The legacy `wakeup` event remains accepted for
+rolling upgrade/rollback. Never append `select` to the Power branch: the user
+must choose whether to confirm shutdown. This differs from TV/Home hold,
+which deliberately uses native held `home` rather than that shortcut.
+
+TV/Home holds emit the compatible `control_center` event, but the HA example
+maps it to `remote.send_command` with `command: home` and `hold_secs: 1`.
+That preserves native button semantics rather than invoking Companion's
+dedicated control-center shortcut (which can focus the power panel). If an
+older installation shows the wrong panel, back up its automation, add this
+branch from the example, run HA's configuration check and reload Automations.
+Do not change Bluetooth pairing, Power handling, or decoder thresholds. Verify
+short tap and hold against the original remote on the same tvOS screen;
+different Apple TV versions can present different panels. Roll back just the
+automation preimage if needed. An HTTP success alone is not physical acceptance.
 
 Keep a working source tag, both image IDs and a **cold private-state backup**.
 Review the diff, run CI/static checks and build the candidate images before

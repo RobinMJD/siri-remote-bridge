@@ -2,7 +2,9 @@
 
 import argparse
 import json
+import math
 import os
+import re
 import subprocess
 import tempfile
 import time
@@ -32,12 +34,20 @@ def collect(project):
         )
     except (OSError, ValueError, subprocess.SubprocessError):
         status = {}
-    values["heartbeat_fresh"] = int(0 <= time.monotonic() - status.get("heartbeat", -999) < 15)
+    if not isinstance(status, dict):
+        status = {}
+    heartbeat = status.get("heartbeat")
+    values["heartbeat_fresh"] = int(
+        isinstance(heartbeat, (int, float))
+        and math.isfinite(heartbeat)
+        and 0 <= time.monotonic() - heartbeat < 15
+    )
     for key in ["backend_ready", "bond_present", "remote_connected"]:
         values[key] = int(status.get(key) is True)
     values["repair_required"] = int(status.get("phase") == "repair_required")
-    values["http_failures_total"] = int(status.get("http_failures", 0))
-    values["http_successes_total"] = int(status.get("http_successes", 0))
+    for name in ["failures", "successes"]:
+        value = status.get("http_" + name, 0)
+        values["http_" + name + "_total"] = value if type(value) is int and value >= 0 else 0
     return values
 
 
@@ -47,6 +57,8 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--maintenance-file", type=Path)
     args = parser.parse_args()
+    if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", args.project):
+        parser.error("Use a valid Compose project name")
     values = collect(args.project)
     values["collector_timestamp_seconds"] = int(time.time())
     values["maintenance"] = int(bool(args.maintenance_file and args.maintenance_file.exists()))
