@@ -4,10 +4,10 @@
   <!-- Main path -->
   <path d="M160 228 H1455 Q1485 228 1485 258 V273" fill="none" stroke="#0082FC" stroke-width="9"></path>
   <path d="M1485 293 L1470 271 L1500 271 Z" fill="#0082FC"></path>
-  
+
   <circle cx="830" cy="228" r="44" fill="#0082FC"></circle>
   <path d="M816.36 214.36 L843.64 241.64 L830 255.28 V200.72 L843.64 214.36 L816.36 241.64" fill="none" stroke="#fff" stroke-width="5.456" stroke-linecap="round" stroke-linejoin="round"></path>
-  
+
   <g transform="translate(62,77)">
     <rect x="0" y="0" width="96" height="300" rx="20" fill="#E9E9EB" stroke="#8E8E93" stroke-width="3"></rect>
     <circle cx="75" cy="21" r="10" fill="none" stroke="#3A3A3C" stroke-width="2.2"></circle>
@@ -28,17 +28,17 @@
     <path d="M19 223 H23 L28 218 V236 L23 231 H19 Z" fill="#fff"></path>
     <path d="M18 218 L36 236" stroke="#1C1C1E" stroke-width="4"></path><path d="M19 219 L35 235" stroke="#fff" stroke-width="2" stroke-linecap="round"></path>
   </g>
-  
+
   <rect x="180" y="142" width="155" height="60" rx="30" fill="#EDEDED"></rect>
   <text x="257.5" y="186.4" font-size="40" text-anchor="middle" font-weight="700" fill="#111111">Main</text>
 
   <!-- Added path: Bluetooth -->
   <path d="M160 625 H398" stroke="#0082FC" stroke-width="9"></path>
   <path d="M420 625 L398 610 L398 640 Z" fill="#0082FC"></path>
-  
+
   <circle cx="288" cy="625" r="42" fill="#0082FC"></circle>
   <path d="M274.98 611.98 L301.02 638.02 L288 651.04 V598.96 L301.02 611.98 L274.98 638.02" fill="none" stroke="#fff" stroke-width="5.208" stroke-linecap="round" stroke-linejoin="round"></path>
-  
+
   <g transform="translate(62,445)">
     <rect x="0" y="0" width="96" height="300" rx="20" fill="#E9E9EB" stroke="#8E8E93" stroke-width="3"></rect>
     <circle cx="75" cy="21" r="10" fill="none" stroke="#3A3A3C" stroke-width="2.2"></circle>
@@ -59,7 +59,7 @@
     <path d="M19 223 H23 L28 218 V236 L23 231 H19 Z" fill="#fff"></path>
     <path d="M18 218 L36 236" stroke="#1C1C1E" stroke-width="4"></path><path d="M19 219 L35 235" stroke="#fff" stroke-width="2" stroke-linecap="round"></path>
   </g>
-  
+
   <rect x="180" y="488" width="172" height="60" rx="30" fill="#EDEDED"></rect>
   <text x="266" y="532.4" font-size="40" text-anchor="middle" font-weight="700" fill="#111111">Added</text>
 
@@ -68,14 +68,14 @@
   <text x="675" y="545" font-size="38" font-weight="700" text-anchor="middle" fill="#111111">Siri Remote Bridge</text>
   <rect x="508" y="572" width="168" height="163" rx="18" fill="#FFFFFF" stroke="#A9D3FB" stroke-width="3"></rect>
   <rect x="691" y="572" width="168" height="163" rx="18" fill="#FFFFFF" stroke="#A9D3FB" stroke-width="3"></rect>
-  
+
   <g transform="translate(592,632)" stroke="#0B5FB0" stroke-width="4" stroke-linejoin="round">
     <path d="M0 -40 L44 -20 L0 0 L-44 -20 Z" fill="#9FD8FA"></path>
     <path d="M-44 -20 L0 0 V48 L-44 28 Z" fill="#4FB6F2"></path>
     <path d="M44 -20 L0 0 V48 L44 28 Z" fill="#2B9BE6"></path>
     <path d="M10 6 V40 M20 1 V35 M30 -4 V30" stroke="#fff" stroke-width="5" stroke-linecap="round"></path>
   </g>
-  
+
   <g transform="translate(775,632)" stroke="#0B5FB0" stroke-width="4" stroke-linejoin="round">
     <path d="M0 -40 L44 -20 L0 0 L-44 -20 Z" fill="#9FD8FA"></path>
     <path d="M-44 -20 L0 0 V48 L-44 28 Z" fill="#4FB6F2"></path>
@@ -98,7 +98,7 @@
   <path d="M1118 625 L1096 610 L1096 640 Z" fill="#21A84A"></path>
   <path d="M1260 625 H1455 Q1485 625 1485 595 V562" fill="none" stroke="#21A84A" stroke-width="9"></path>
   <path d="M1485 542 L1470 564 L1500 564 Z" fill="#21A84A"></path>
-  
+
   <circle cx="985" cy="625" r="40" fill="#21A84A"></circle>
   <g transform="translate(985,625) scale(1.0526315789473684)" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
     <rect x="-7" y="-20" width="14" height="11" rx="2.5"></rect>
@@ -106,7 +106,7 @@
     <rect x="7" y="7" width="14" height="11" rx="2.5"></rect>
     <path d="M0 -9 V-1 M-14 7 V-1 H14 V7"></path>
   </g>
-  
+
   <circle cx="1375" cy="625" r="40" fill="#21A84A"></circle>
   <g transform="translate(1375,625) scale(1.0526315789473684)" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
     <rect x="-7" y="-20" width="14" height="11" rx="2.5"></rect>
@@ -118,7 +118,7 @@
   <!-- Home Assistant (official mark, brand colour) -->
   <rect x="1120" y="543" width="140" height="146" fill="#FFFFFF"></rect>
   <g transform="translate(1120,543) scale(5.833333333333333)"><path d="M22.939 10.627 13.061.749a1.505 1.505 0 0 0-2.121 0l-9.879 9.878C.478 11.21 0 12.363 0 13.187v9c0 .826.675 1.5 1.5 1.5h9.227l-4.063-4.062a2.034 2.034 0 0 1-.664.113c-1.13 0-2.05-.92-2.05-2.05s.92-2.05 2.05-2.05 2.05.92 2.05 2.05c0 .233-.041.456-.113.665l3.163 3.163V9.928a2.05 2.05 0 0 1-1.15-1.84c0-1.13.92-2.05 2.05-2.05s2.05.92 2.05 2.05a2.05 2.05 0 0 1-1.15 1.84v8.127l3.146-3.146A2.051 2.051 0 0 1 18 12.239c1.13 0 2.05.92 2.05 2.05s-.92 2.05-2.05 2.05c-.25 0-.488-.047-.709-.13L12.9 20.602v3.088h9.6c.825 0 1.5-.675 1.5-1.5v-9c0-.825-.477-1.977-1.061-2.561z" fill="#18BCF2"></path></g>
-  
+
   <rect x="1085" y="707" width="210" height="92" rx="22" fill="#EDEDED"></rect>
   <text x="1190" y="746" font-size="33" font-weight="700" text-anchor="middle" fill="#111111">Home</text>
   <text x="1190" y="782" font-size="33" font-weight="700" text-anchor="middle" fill="#111111">Assistant</text>
@@ -134,11 +134,11 @@
 
   <!-- Legend -->
   <rect x="1412" y="818" width="238" height="100" rx="16" fill="#FFFFFF" stroke="#D6D6D6" stroke-width="2.5"></rect>
-  
+
   <circle cx="1450" cy="847" r="19" fill="#0082FC"></circle>
   <path d="M1444.11 841.11 L1455.89 852.89 L1450 858.78 V835.22 L1455.89 841.11 L1444.11 852.89" fill="none" stroke="#fff" stroke-width="2.356" stroke-linecap="round" stroke-linejoin="round"></path>
   <text x="1480" y="855" font-size="22" font-weight="700" fill="#111111">Bluetooth</text>
-  
+
   <circle cx="1450" cy="889" r="19" fill="#21A84A"></circle>
   <g transform="translate(1450,889) scale(0.5)" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
     <rect x="-7" y="-20" width="14" height="11" rx="2.5"></rect>
