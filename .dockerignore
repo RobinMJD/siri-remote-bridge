@@ -6,3 +6,5 @@
 !healthcheck.py
 !bluez-entrypoint.sh
 !dbus.conf
+!patches/bluez-5.82-eir-name-length.patch
+!scripts/build-bluez-backport.sh

@@ -8,10 +8,33 @@ WORKDIR /src
 RUN tar -xzf /tmp/receiver.tar.gz --strip-components=1 -C /src
 RUN cargo build --locked --release -j 2
 
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS bluez-build
+ENV DEBIAN_FRONTEND=noninteractive
+RUN printf '%s\n' 'deb-src http://deb.debian.org/debian trixie main' > /etc/apt/sources.list.d/bluez-src.list \
+    && apt-get update && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends dpkg-dev quilt \
+    && apt-get build-dep -y --no-install-recommends bluez=5.82-1.1 \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+ADD --checksum=sha256:a452a7352488e55a09eb8d8d8ba883db1bf93df1d06a13b0804bf908fe2099ad \
+    https://deb.debian.org/debian/pool/main/b/bluez/bluez_5.82-1.1.dsc /src/
+ADD --checksum=sha256:818e2bfa64d3d26b49cc857448f00f4fc7bb76949266de8d7f4c07f8057bf95c \
+    https://deb.debian.org/debian/pool/main/b/bluez/bluez_5.82.orig.tar.gz /src/
+ADD --checksum=sha256:dd32f06a527859709055912ac8c8a0377030f7f34d7d6a9cc7f5938ed8bac659 \
+    https://deb.debian.org/debian/pool/main/b/bluez/bluez_5.82-1.1.debian.tar.xz /src/
+RUN dpkg-source -x bluez_5.82-1.1.dsc
+COPY patches/bluez-5.82-eir-name-length.patch /src/bluez-5.82/debian/patches/bridge-eir-name-length.patch
+COPY scripts/build-bluez-backport.sh /usr/local/bin/build-bluez-backport
+RUN /bin/sh /usr/local/bin/build-bluez-backport
+
 FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2 AS bluez
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends bluez dbus python3 python3-dbus \
     && rm -rf /var/lib/apt/lists/* \
+    && test "$(dpkg-query -W -f='${Version}' bluez)" = '5.82-1.1' \
     && useradd --uid 65532 --no-create-home --shell /usr/sbin/nologin receiver
+COPY --from=bluez-build /tmp/bluez-bridge.deb /tmp/bluez-bridge.deb
+RUN dpkg -i /tmp/bluez-bridge.deb && rm /tmp/bluez-bridge.deb \
+    && test "$(dpkg-query -W -f='${Version}' bluez)" = '5.82-1.1+bridge1'
 COPY dbus.conf /etc/siri-remote-dbus.conf
 COPY bluez_status.py /opt/siri-remote/bluez_status.py
 COPY bluez-entrypoint.sh /usr/local/bin/bluez-entrypoint

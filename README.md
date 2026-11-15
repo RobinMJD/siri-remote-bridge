@@ -59,7 +59,7 @@ The installation tested here uses an **Apple TV 4K (4th generation)** with the U
 
 | Requirement | Verified configuration and limit |
 | --- | --- |
-| Linux Bluetooth receiver | Debian 13, Linux 6.12, and one dedicated Intel BLE USB adapter tested. No minimum kernel or BlueZ release has been qualified. |
+| Linux Bluetooth receiver | Debian 13, Linux 6.12, and one dedicated Intel BLE USB adapter tested. The BlueZ image rebuilds Debian 5.82 with a device-name security fix. No minimum kernel or host BlueZ release has been qualified. |
 | Containers | Docker Engine with **Docker Compose v2** required. No minimum Engine or Compose point release has been established. Docker Desktop on macOS is not a supported Bluetooth receiver. |
 | Home Assistant | Apple TV integration, webhook automations, and `remote.send_command` with `hold_secs`. **2026.8.1** tested; an earlier minimum has not been established. |
 | Network and time | Receiver can reach Home Assistant on a private LAN; Home Assistant can reach Apple TV. Choose verified HTTPS where available. HTTP requires an explicit trusted-LAN opt-in because it exposes the scoped webhook secret to observers on that route. Synchronize the two hosts' clocks so stale button events are rejected correctly. |

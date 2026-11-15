@@ -17,3 +17,9 @@ BlueZ or upstream decoder project, endorsement or warranty.
 Images include Debian packages, BlueZ, D-Bus and the Rust dependency tree;
 their respective licenses still apply. No binary firmware or pairing data is
 distributed here. Install firmware through your operating system vendor.
+
+The BlueZ image rebuilds Debian's BlueZ 5.82 source with a local backport of
+[upstream commit 381b5d0](https://github.com/bluez/bluez/commit/381b5d0d208972586282116d333865ba93b8dec2)
+for CVE-2026-80186. The source archive checksums and patch are in the Dockerfile
+and `patches/bluez-5.82-eir-name-length.patch`; BlueZ's GPL-2.0-or-later source
+and notices remain available from the linked Debian source package.
