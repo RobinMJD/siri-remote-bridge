@@ -1,9 +1,13 @@
 # Validation scope
 
-Current suite: 61 unit/contract tests. Center Select now has deferred tap/hold
+Current suite: 62 unit/contract tests. Center Select now has deferred tap/hold
 handling and short Power has a separate native menu/wake mapping. These new
 behaviors need a physical app/menu check in addition to software tests; do not
 interpret older prototype button acceptance as acceptance of this update.
+The owner confirmed native Select hold and short Power menu behavior. Select
+was noticeably slower than the original remote at the first 650 ms threshold;
+the 250 ms threshold removes 400 ms of decision latency. Qualify click/hold
+comfort separately; HA's native Hold action still contributes its own delay.
 
 Initial software suite: 51 unit/contract tests covering button mapping and hold
 thresholds, bounded repeats, fresh/stale reports, disconnect queue generations,

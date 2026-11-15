@@ -82,6 +82,13 @@ Never recover by weakening HA authentication or reusing a secret from a log.
 For center-button holds, update the HA event allowlist and add the `select_hold`
 branch before replacing the relay. It sends `select` with `hold_secs: 1`; the
 receiver defers the ordinary click until release and emits a hold only once.
+Select uses a 250 ms decision threshold, rather than Back/Home's 650 ms, to
+avoid stacking an unnecessary wait before HA's native held-input action.
+Clicks released before 250 ms remain ordinary clicks. HA translates
+`hold_secs: 1` to its library's Hold action, not a freely tunable duration;
+setting it below one sends a normal click on the qualified HA version.
+Expect some remaining native-hold/network latency; do not patch HA internals
+or send an initial Select click to hide that delay.
 Test short clicks, a held thumbnail in YouTube, and navigation afterward. App
 menus and supported options are Apple TV/application behavior, not hard-coded
 playlist/channel actions in this bridge.

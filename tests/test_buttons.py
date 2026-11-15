@@ -13,21 +13,21 @@ class RelayTests(unittest.TestCase):
         state = Buttons()
         self.assertEqual(state.update(0x8, 0), [])
         self.assertEqual(state.update(0x8, 0.1), [])
-        self.assertEqual(state.repeat(0.3), [])
-        self.assertEqual(state.update(0, 0.4), ["select"])
+        self.assertEqual(state.repeat(0.1), [])
+        self.assertEqual(state.update(0, 0.15), ["select"])
 
     def test_select_hold_is_sent_once_without_an_initial_click(self):
         state = Buttons()
         self.assertEqual(state.update(0x8, 0), [])
-        self.assertEqual(state.repeat(0.64), [])
-        self.assertEqual(state.repeat(0.65), ["select_hold"])
+        self.assertEqual(state.repeat(0.24), [])
+        self.assertEqual(state.repeat(0.25), ["select_hold"])
         self.assertEqual(state.repeat(3), [])
         self.assertEqual(state.update(0, 3.1), [])
 
     def test_select_release_at_hold_threshold_sends_hold_once(self):
         state = Buttons()
         state.update(0x8, 0)
-        self.assertEqual(state.update(0, 0.65), ["select_hold"])
+        self.assertEqual(state.update(0, 0.25), ["select_hold"])
         self.assertEqual(state.repeat(1), [])
 
     def test_select_tap_works_after_a_hold(self):
@@ -37,6 +37,12 @@ class RelayTests(unittest.TestCase):
         state.update(0, 0.8)
         self.assertEqual(state.update(0x8, 1), [])
         self.assertEqual(state.update(0, 1.1), ["select"])
+
+    def test_select_just_below_threshold_remains_a_normal_click(self):
+        state = Buttons()
+        state.update(0x8, 0)
+        self.assertEqual(state.update(0, 0.249), ["select"])
+        self.assertEqual(state.repeat(0.3), [])
 
     def test_disconnect_discards_pending_select_without_a_ghost_click(self):
         state = Buttons()
@@ -49,7 +55,7 @@ class RelayTests(unittest.TestCase):
         state = Buttons()
         state.update(0x8, 0)
         state.update(0x9, 0.2)
-        self.assertEqual(state.repeat(0.7), ["select_hold"])
+        self.assertEqual(state.repeat(0.25), ["select_hold"])
         self.assertEqual(state.repeat(0.9), ["control_center"])
         self.assertEqual(state.update(0, 1), [])
 
