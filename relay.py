@@ -31,7 +31,16 @@ BUTTONS = {
     0x0800: "down",
     0x1000: "left",
 }
-REPEATING = {"up", "down", "left", "right", "volume_up", "volume_down"}
+DIRECTION_REPEAT_LIMIT = 20
+VOLUME_REPEAT_LIMIT = 3
+REPEAT_LIMITS = {
+    "up": DIRECTION_REPEAT_LIMIT,
+    "down": DIRECTION_REPEAT_LIMIT,
+    "left": DIRECTION_REPEAT_LIMIT,
+    "right": DIRECTION_REPEAT_LIMIT,
+    "volume_up": VOLUME_REPEAT_LIMIT,
+    "volume_down": VOLUME_REPEAT_LIMIT,
+}
 DEFERRED = {
     0x0001: ("home", "control_center"),
     0x0008: ("select", "select_hold"),
@@ -84,7 +93,7 @@ class Buttons:
                     self.deferred[bit] = (now, False)
                     continue
                 commands.append(button)
-                if button in REPEATING:
+                if button in REPEAT_LIMITS:
                     self.held[bit] = (now, now + 0.35)
         return commands
 
@@ -95,11 +104,12 @@ class Buttons:
                 commands.append(DEFERRED[bit][1])
                 self.deferred[bit] = (started, True)
         for bit, (started, due) in list(self.held.items()):
+            button = BUTTONS[bit]
             # A missing release must not keep navigating indefinitely.
-            if now - started >= 3:
+            if now - started >= REPEAT_LIMITS[button]:
                 del self.held[bit]
             elif now >= due:
-                commands.append(BUTTONS[bit])
+                commands.append(button)
                 self.held[bit] = (started, now + 0.15)
         return commands
 

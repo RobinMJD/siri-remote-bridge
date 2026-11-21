@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Extend directional button repeats from 3 to 20 seconds for tasks like
+  scrubbing in YouTube. The relay stops generating repeats on release or disconnect.
+
 - Require an explicit webhook transport choice for new installs and a trusted-LAN
   acknowledgement for HTTP. Existing explicit HTTP configurations still load.
 - Bound the entire webhook request with a disposable process so a slow response
