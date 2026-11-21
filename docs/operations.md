@@ -79,6 +79,12 @@ Never recover by weakening HA authentication or reusing a secret from a log.
 
 ## Upgrade / rollback
 
+Longer arrow holds ship in the relay image. Build and recreate just the relay
+with `docker compose up -d --no-deps --build relay`. In YouTube, hold Right or
+Left past three seconds, then release and check that seeking stops. Repeats end
+after 20 seconds if the receiver misses the release. Restore the previous relay
+image to roll back to the three-second cutoff.
+
 For center-button holds, update the HA event allowlist and add the `select_hold`
 branch before replacing the relay. It sends `select` with `hold_secs: 1`; the
 receiver defers the ordinary click until release and emits a hold only once.

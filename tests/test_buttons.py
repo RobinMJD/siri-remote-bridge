@@ -75,11 +75,27 @@ class RelayTests(unittest.TestCase):
         state.update(0, 0.45)
         self.assertEqual(state.repeat(0.6), [])
 
-    def test_missing_release_is_bounded(self):
+    def test_directional_hold_repeats_beyond_three_seconds_and_stops_at_twenty(self):
+        for mask, name in ((0x200, "up"), (0x400, "right"), (0x800, "down"), (0x1000, "left")):
+            with self.subTest(button=name):
+                state = Buttons()
+                self.assertEqual(state.update(mask, 0), [name])
+                for now in (0.35, 3, 10, 19.8):
+                    self.assertEqual(state.repeat(now), [name])
+                self.assertEqual(state.repeat(20), [])
+                self.assertEqual(state.update(mask, 21), [])
+                self.assertEqual(state.repeat(22), [])
+                self.assertEqual(state.update(0, 22.1), [])
+                self.assertEqual(state.update(mask, 22.2), [name])
+                self.assertEqual(state.repeat(22.6), [name])
+
+    def test_volume_hold_stops_at_three_seconds_while_direction_keeps_repeating(self):
         state = Buttons()
-        state.update(0x200, 0)
-        self.assertEqual(state.repeat(3), [])
-        self.assertEqual(state.repeat(5), [])
+        self.assertEqual(state.update(0x406, 0), ["volume_up", "volume_down", "right"])
+        self.assertEqual(state.repeat(0.35), ["volume_up", "volume_down", "right"])
+        self.assertEqual(state.repeat(3), ["right"])
+        self.assertEqual(state.update(0, 8), [])
+        self.assertEqual(state.repeat(8.2), [])
 
     def test_playback_and_home_never_repeat(self):
         state = Buttons()
@@ -133,8 +149,9 @@ class RelayTests(unittest.TestCase):
     def test_disconnect_clears_hold(self):
         state = Buttons()
         state.update(0x200, 0)
+        self.assertEqual(state.repeat(5), ["up"])
         state.clear()
-        self.assertEqual(state.repeat(0.5), [])
+        self.assertEqual(state.repeat(5.2), [])
 
     def test_fresh_report(self):
         line = "2026-11-13T22:54:56.610Z input report_id=0xFB raw=00 02 | buttons=Up"

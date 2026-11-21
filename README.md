@@ -71,7 +71,7 @@ Proxmox is optional. If using a VM, pass the Bluetooth adapter through persisten
 
 | Remote input | Default action |
 | --- | --- |
-| Arrows | Navigate; held directions repeat for a bounded time. |
+| Arrows | Navigate. Hold an arrow for up to 20 seconds to scroll or scrub in apps such as YouTube. |
 | Select tap / hold | Select on release / open the native held-Select context menu. |
 | Back tap / hold | Go back one level / return to the Home Screen. |
 | TV/Home tap / hold | Go Home / send a native held-Home command. |
